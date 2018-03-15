@@ -15,6 +15,7 @@ class PostList extends Component{
     constructor(props){
         super(props);
         console.log('>>>>>>>in post comp')
+        console.log(props)
         this.state={error:[],hasErrors:false,textarea:this.props.defaultval.pcontent}
       }
     handleEdit(postid,e){
