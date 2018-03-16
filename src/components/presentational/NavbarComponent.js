@@ -11,7 +11,7 @@ return(
   <a className="navbar-brand" href="#">The Girl Who Loves Travel</a>
   <ul className="navbar-nav mr-auto mt-2 mt-lg-0">
     <li className="nav-item active">
-      <Link to={`/`} className="nav-link">Home <span className="sr-only">(current)</span></Link>
+      <Link to={`/post`} className="nav-link">Home <span className="sr-only">(current)</span></Link>
     </li>
     <li className="nav-item">
       <a className="nav-link" href="#">Lifestyle</a>

@@ -2,25 +2,41 @@ import React,{ Component } from "react";
 import {connect} from 'react-redux'
 import swal from 'sweetalert2';
 import {deletePost} from '../../actions/actions'
+import {editPost} from '../../actions/actions'
 import {bindActionCreators} from "redux";
 import Parser from 'html-react-parser';
 import ReactQuill from 'react-quill';
-import {editPost} from '../../actions/actions'
 import { Link } from 'react-router-dom'
 var validate = require("validate.js");
 var moment = require('moment');
 var moment = require('moment');
-var textarea;
+
 class PostList extends Component{
     constructor(props){
         super(props);
         console.log('>>>>>>>in post comp')
         console.log(props)
-        this.state={error:[],hasErrors:false,textarea:this.props.defaultval.pcontent}
+        this.state={error:[],hasErrors:false}
       }
-    handleEdit(postid,e){
+      openModal(e) {
+        e.preventDefault()
+        this.setState({modalIsOpen: true});
+      }
+    
+      afterOpenModal() {
+        // references are now sync'd and can be accessed.
+      }
+    
+      closeModal(e) {
+        e.preventDefault()
+        this.setState({modalIsOpen: false});
+      }
+    
+    handleEdit(postid,pcontent,e){
     e.preventDefault();
-   
+            console.log('in handle edit')
+            console.log(pcontent)
+            console.log(postid)
             validate.extend(validate.validators.datetime, {
               // The value is guaranteed not to be null or undefined but otherwise it
               // could be anything.
@@ -62,7 +78,7 @@ class PostList extends Component{
             const author=data.get('author')
             const title=data.get('title')
             const date=data.get('date')
-            const content=this.state.textarea
+            const content=''
             const info={'author':author,
                 'title': title,
                 'date': date,
@@ -99,7 +115,7 @@ class PostList extends Component{
             }
     }
     handleTextAreaChange(value){
-     this.setState({textarea:value})
+     this.state.textarea=value;
     }
     handleDelete(postid,e){
       e.preventDefault();
@@ -130,22 +146,16 @@ class PostList extends Component{
     clearState(){
         this.setState({errors:[],hasErrors:false})
       }
-      handleEditClick(post,e){
-        e.preventDefault();
-        console.log('in hancle edit clickkkkkkkkkkkkkkkkkk')
-        console.log(post)
-        this.props.handleclick(post)
-      }
     render(){
-      console.log(this.props.posts)
     return (this.props.posts.length===0)?(<div><h3>Sorry no posts available</h3></div>):this.props.posts.map(post=>{
-      return(<article key={Math.random()} className="blog-post">
+      return(
+      <article key={Math.random()} className="blog-post">
       {/* <div className="blog-post-image">
         <a href="post.html"><img alt="" src={require('../../utils/images/750x500-1.jpg')} /></a>
       </div> */}
       <div className="blog-post-body">
         <h2><a href="post.html">{post.ptitle}</a>
-          <button onClick={this.handleEditClick.bind(this,post)}  data-toggle="modal" data-target="#editBox" type="button" className="btn btn-lg btn-info pull-right">
+          <button type="button" className="btn btn-lg btn-info pull-right">
             <span className="fa fa-edit"/>
           </button>
           <button onClick={this.handleDelete.bind(this,post.pid)} type="button"  id="btndel"  className="btn btn-lg btn-danger pull-right">
@@ -156,45 +166,8 @@ class PostList extends Component{
         <div>{Parser(post.pcontent.slice(0,post.pcontent.length/2))}<span>...</span></div>
         <div className="read-more"><Link to={`/post/${post.pid}`}>Continue Reading</Link></div>
       </div>
-      <div className="modal fade" id="editBox" tabIndex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-                  <div className="modal-dialog modal-dialog-centered" role="document">
-                  <div className="modal-content">
-                  <div className="modal-header">
-                    { (this.state.hasErrors) ? <div>{(this.state.errors.map((error,index)=>{
-                return <p className="text-danger text-center" key={index*Math.random()}>{error}</p>
-                    } ) )
-                    }</div>: <h5 className="modal-title" id="exampleModalLongTitle">Edit Post</h5>}
-           
-                  <button type="button" onClick={this.clearState.bind(this)} className="close" data-dismiss="modal" aria-label="Close">
-                      <span aria-hidden="true">&times;</span>
-                    </button>
-          </div>
-          <div className="modal-body">
-          <form onSubmit={this.handleEdit.bind(this,post.pid,)}>
-                <div className="form-group required">
-                  <label className="control-label" htmlFor="author">Update Author</label>
-                  <input className="form-control" name="author" id="author" placeholder="Update Author" defaultValue={post.pauthor} type="text" />
-                </div>
-                <div className="form-group required">
-                  <label className="control-label"  htmlFor="title">Update Title</label>
-                  <input className="form-control" name="title" id="title" placeholder="Update Title" defaultValue={post.ptitle} type="text" />
-                </div>
-                <div className="form-group required">
-                  <label className="control-label"  htmlFor="date">Date</label>
-                  <input readOnly className="form-control" name="date" id="date" placeholder="Choose Date" defaultValue={post.pdate} type="date" />
-                </div>
-                <div className="form-group">
-                  <label htmlFor="content">Update Content</label>
-                  <ReactQuill theme="snow" value={this.state.textarea} onChange={this.handleTextAreaChange.bind(this)} />
-                </div>
-                <button type="submit" className="btn btn-primary">Update</button>
-              </form>
-          </div>
-        </div>
-      </div>
-    </div>
      </article>
-     
+
     )
     })
     }
@@ -203,7 +176,7 @@ class PostList extends Component{
 const mapStateToProps = state => {
     
     return {
-      posts : state.posts,
+      posts : state.posts
     }
   }
   const mapDispatchToProps = dispatch => {
@@ -212,3 +185,4 @@ const mapStateToProps = state => {
   
  
  export default connect(mapStateToProps,mapDispatchToProps)(PostList);
+ 

@@ -3,36 +3,21 @@ import Post from "../containers/PostComponent";
 import Navbar from "./NavbarComponent";
 import Footer from "./FooterComponent";
 import PostList from "../containers/PostListComponent"
-import { fetchAllPosts } from '../../actions/actions'
-import { PageLoading } from '../../actions/actions'
-import { PageLoaded } from '../../actions/actions'
 import { connect } from "react-redux"
 import { bindActionCreators } from "redux";
 import ReactQuill from 'react-quill';
 import { savePost } from '../../actions/actions'
 import swal from 'sweetalert2'
-import Spinner from './SpinnerLoader'
+
 var validate = require("validate.js");
 var moment = require('moment');
 class Layout extends Component {
   constructor(props) {
     super(props);
-    this.state = { errors: [], hasErrors: false, textarea: '',editPostDefaultValue:null }
+    this.state = { errors: [], hasErrors: false}
   }
-  componentWillMount(dispatch) {
-    console.log('dispaching load start')
-    this.props.pageLoading();
-    this.props.fetchAll((status) => {
-      if (status !== 200) {
-        swal("Oops!", "Unable to fetch posts", "error")
-      } else {
-        setTimeout(() => {
-          this.props.pageLoaded();
-        },200)
-
-      }
-
-    });
+  componentWillMount() { 
+ 
   }
   handleCreate(e) {
     e.preventDefault();
@@ -119,15 +104,15 @@ class Layout extends Component {
   handleTextAreaChange(value) {
     this.setState({ textarea: value })
   }
-  handleEditChange=(post)=>{
+  handleEditChange=(post,openModal)=>{
+    console.log('inhandleditchange')
     console.log(post)
-    this.state.editPostDefaultValue=post
-    console.log(this.state.editPostDefaultValue)
-  }
+    console.log(openModal)
+    this.setState({editPostDefaultValue:post})
+}
   render() {
     return (
-      <div>
-        {this.props.isloading ? <Spinner /> : <div>
+       <div>
           <Navbar />
           <div className="container">
             <header>
@@ -174,31 +159,22 @@ class Layout extends Component {
                       </div>
                     </div>
                   </div>
-                  <PostList handleclick={this.handleEditChange} defaultval={this.state.editPostDefaultValue}/>
+                  <PostList handleclick={this.handleEditChange}/>
                 </div>
               </div>
             </section>
           </div>
           <Footer />
         </div>
-        }
-      </div>
+     
     )
   }
 
 }
-const mapStateToProps = state => {
 
-  return {
-    isloading: state.isLoading,
-  }
-}
 const mapDispatchToProps = dispatch => {
   return bindActionCreators({
-    fetchAll: fetchAllPosts,
-    pageLoading: PageLoading,
-    pageLoaded: PageLoaded,
     savePost: savePost
   }, dispatch);
 }
-export default connect(mapStateToProps, mapDispatchToProps)(Layout)
+export default connect(null, mapDispatchToProps)(Layout)
