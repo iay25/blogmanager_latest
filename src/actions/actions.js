@@ -30,6 +30,7 @@ export const fetchAllPosts=(callback)=>{
       console.log('request gyi bhyi')
         return(dispatch)=>{
         request.then((response)=>{
+            console.log(response)
             dispatch({type:'FETCH_ALL',payload:response.data})
             callback(response.status)
         }).catch((err)=>{

@@ -12,34 +12,29 @@ import swal from 'sweetalert2'
 import Layout from './components/presentational/LayoutComponent'
 class App extends Component {
   componentWillMount(){
-    console.log('dispaching load start')
-    this.props.pageLoading();
     this.props.fetchAll((status) => {
       if (status !== 200) {
         swal("Oops!", "Unable to fetch posts", "error")
       } else {
-        this.props.pageLoaded();
+        swal("More coming soon!", "dev working hard", "info")
       }
       }
     )
     }
   render() {
-    console.log(this.props.isloading)
      return <div>
-        {this.props.isloading} <Spinner/> : <Layout/>
+        <Layout/>
        </div>
   }
 }
-const mapStateToProps = state => {
-  return {
-    isloading: state.isLoading,
-  }
-}
+// const mapStateToProps = state => {
+//   return {
+//     isloading: state.isLoading,
+//   }
+// }
 const mapDispatchToProps = dispatch => {
   return bindActionCreators({
     fetchAll: fetchAllPosts,
-    pageLoading: PageLoading,
-    pageLoaded: PageLoaded
   }, dispatch);
 }
-export default connect(mapStateToProps, mapDispatchToProps)(App)
+export default connect(null, mapDispatchToProps)(App)

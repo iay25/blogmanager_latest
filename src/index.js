@@ -7,7 +7,6 @@ import registerServiceWorker from './registerServiceWorker';
 import { Provider } from 'react-redux'
 import store from './store/store'
 import {BrowserRouter,Route,Switch} from 'react-router-dom'
-
 import PostComponent from './components/containers/PostComponent';
 import Layout from './components/presentational/LayoutComponent';
 ReactDOM.render(<Provider store={store}>

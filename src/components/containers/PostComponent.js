@@ -34,7 +34,7 @@ render(){
     <div className="container">
    
    <article key={Math.random()} className="blog-post">
-   <Link to={`/posts`}><i class="fa fa-arrow-circle-left fa-4x"></i></Link>
+   <Link to={`/posts`}><i className="fa fa-arrow-circle-left fa-4x"></i></Link>
    {/* <div className="blog-post-image">
      <a href="post.html"><img alt="" src={require('../../utils/images/750x500-1.jpg')} /></a>
    </div> */}
