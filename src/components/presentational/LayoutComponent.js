@@ -7,12 +7,13 @@ import { bindActionCreators } from "redux";
 import { savePost } from '../../actions/actions'
 import swal from 'sweetalert2'
 import Modal from 'react-responsive-modal';
+import axios from 'axios'
 var validate = require("validate.js");
 var moment = require('moment');
 class Layout extends Component {
   constructor(props) {
     super(props);
-    this.state = { errors: [], hasErrors: false,open: false}
+    this.state = { errors: [], hasErrors: false,open: false,selectedFile: null}
   }
   onOpenModal = () => {
     this.setState({ open: true });
@@ -102,7 +103,23 @@ class Layout extends Component {
       this.setState({ errors: err, hasErrors: true })
     }
   }
-  
+  fileChangedHandler = (event) => {
+    const file = event.target.files[0]
+    this.setState({selectedFile: event.target.files[0]})
+  }
+  uploadHandler = () => {
+    console.log(this.state.selectedFile)
+    axios({
+      method: 'post',
+      url: 'http://thumbor-server/image',
+      data:this.state.selectedFile,
+      headers:{'Content-Type': 'image/jpeg',
+      'Slug': 'photo.jpg'
+    }
+    }).then(function(response) {
+      console.log(response)
+    });
+  }
   render() {
     return (
        <div>
@@ -136,6 +153,8 @@ class Layout extends Component {
                       <label className="control-label"  htmlFor="date">Enter Date</label>
                       <input className="form-control" name="date" id="date" placeholder="Enter Date" type="date" />
                     </div>
+                    <input type="file" onChange={this.fileChangedHandler}/>
+                    <button onClick={this.uploadHandler} className="btn btn-primary">Upload!</button>
                     <div className="form-group">
                       <label htmlFor="content">Add Content</label>
                       <textarea name="content" className="form-control" placeholder="Add Content" rows="3"></textarea>

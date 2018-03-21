@@ -136,6 +136,37 @@ class PostList extends Component{
     );
     }
     render(){
+      let modalPopUp =(<div></div>);
+      if(null != this.state.currentPost){
+       modalPopUp = (<Modal open={this.state.open} onClose={this.onCloseModal} closeIconSize={14} little>
+        { (this.state.hasErrors) ? <div>
+          {(this.state.errors.map((error,index)=>{
+          return <p className="text-danger text-center" key={index*Math.random()}>{error}</p>
+        }
+   )
+   )
+   }</div>:''}
+        <form onSubmit={this.handleEdit.bind(this,this.state.currentPost.pid)}>
+          <div className="form-group required">
+            <label className="control-label"  htmlFor="author">Update Author</label>
+            <input className="form-control" defaultValue={this.state.currentPost.pauthor} name="author" id="author"  type="text" />
+          </div>
+          <div className="form-group required">
+            <label className="control-label"   htmlFor="title">Change Title</label>
+            <input className="form-control" defaultValue={this.state.currentPost.ptitle} name="title" id="title"  type="text" />
+          </div>
+          <div className="form-group required">
+            <label className="control-label"  htmlFor="date">Date</label>
+            <input className="form-control" readOnly  defaultValue={this.state.currentPost.pdate}  name="date" id="date"  type="date" />
+          </div>
+          <div className="form-group">
+            <label htmlFor="content">Update Content</label>
+            <textarea name="content" className="form-control" defaultValue={this.state.currentPost.pcontent}  rows="3"></textarea>
+          </div>
+          <button type="submit" className="btn btn-primary">Update</button>
+        </form>
+        </Modal>);
+      }
     return (this.props.posts.length===0)?(<div><h3>Sorry no posts available</h3></div>):this.props.posts.map(post=>{
       return(
       <article key={Math.random()} className="blog-post">
@@ -147,62 +178,7 @@ class PostList extends Component{
           <button type="button" onClick={this.onOpenModal.bind(this,post)} className="btn btn-lg btn-info pull-right">
             <span className="fa fa-edit"/>
           </button>
-          {this.state.currentPost===null?<Modal open={this.state.open} onClose={this.onCloseModal} closeIconSize={14} little>
-     { (this.state.hasErrors) ? <div>
-       {(this.state.errors.map((error,index)=>{
-       return <p className="text-danger text-center" key={index*Math.random()}>{error}</p>
-     }
-)
-)
-}</div>:''}
-     <form onSubmit={this.handleEdit.bind(this)}>
-       <div className="form-group required">
-         <label className="control-label"  htmlFor="author">Update Author</label>
-         <input className="form-control" defaultValue='Provide Author Name' name="author" id="author"  type="text" />
-       </div>
-       <div className="form-group required">
-         <label className="control-label"   htmlFor="title">Change Title</label>
-         <input className="form-control" defaultValue='Please add a title' name="title" id="title"  type="text" />
-       </div>
-       <div className="form-group required">
-         <label className="control-label"  htmlFor="date">Date</label>
-         <input className="form-control" readOnly  defaultValue='Please select a date' name="date" id="date"  type="date" />
-       </div>
-       <div className="form-group">
-         <label htmlFor="content">Update Content</label>
-         <textarea name="content" className="form-control" defaultValue='Please add content'  rows="3"></textarea>
-       </div>
-       <button type="submit" className="btn btn-primary">Update</button>
-     </form>
-     </Modal>:<Modal open={this.state.open} onClose={this.onCloseModal} closeIconSize={14} little>
-     { (this.state.hasErrors) ? <div>
-       {(this.state.errors.map((error,index)=>{
-       return <p className="text-danger text-center" key={index*Math.random()}>{error}</p>
-     }
-)
-)
-}</div>:''}
-     <form onSubmit={this.handleEdit.bind(this,this.state.currentPost.pid)}>
-       <div className="form-group required">
-         <label className="control-label"  htmlFor="author">Update Author</label>
-         <input className="form-control" defaultValue={this.state.currentPost.pauthor} name="author" id="author"  type="text" />
-       </div>
-       <div className="form-group required">
-         <label className="control-label"   htmlFor="title">Change Title</label>
-         <input className="form-control" defaultValue={this.state.currentPost.ptitle} name="title" id="title"  type="text" />
-       </div>
-       <div className="form-group required">
-         <label className="control-label"  htmlFor="date">Date</label>
-         <input className="form-control" readOnly  defaultValue={this.state.currentPost.pdate}  name="date" id="date"  type="date" />
-       </div>
-       <div className="form-group">
-         <label htmlFor="content">Update Content</label>
-         <textarea name="content" className="form-control" defaultValue={this.state.currentPost.pcontent}  rows="3"></textarea>
-       </div>
-       <button type="submit" className="btn btn-primary">Update</button>
-     </form>
-     </Modal>}
-          
+          {modalPopUp}
           <button onClick={this.handleDelete.bind(this,post.pid)} type="button"  id="btndel"  className="btn btn-lg btn-danger pull-right">
             <span className="fa fa-trash"/>
           </button>
