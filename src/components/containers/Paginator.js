@@ -1,5 +1,6 @@
 import React from 'react';
- 
+var _ = require('underscore');
+
 const defaultProps = {
     initialPage: 1
 }
@@ -7,27 +8,35 @@ const defaultProps = {
 class Pagination extends React.Component {
     constructor(props) {
         super(props);
+        console.log('in paginator..................')
+       
         this.state = { pager: {} };
     }
  
     componentWillMount() {
         // set page if items array isn't empty
         if (this.props.items && this.props.items.length) {
+            console.log('calling setpage')
             this.setPage(this.props.initialPage);
         }
     }
  
     componentDidUpdate(prevProps, prevState) {
+        console.log(this.props)
         // reset page if items array has changed
         if (this.props.items !== prevProps.items) {
-            this.setPage(this.props.initialPage);
+            console.log('calling setpage from did update')
+            this.setPage(1);
         }
     }
  
     setPage(page) {
+        console.log('in set page')
+        console.log(page)
         var items = this.props.items;
+        console.log(items)
         var pager = this.state.pager;
- 
+        console.log(pager)
         if (page < 1 || page > pager.totalPages) {
             return;
         }
@@ -102,27 +111,28 @@ class Pagination extends React.Component {
             // don't display pager if there is only 1 page
             return null;
         }
- 
+        console.log('in render of paginator')
         return (
-            <ul className="pagination">
-                <li className={pager.currentPage === 1 ? 'disabled' : ''}>
-                    <a onClick={() => this.setPage(1)}>First</a>
-                </li>
-                <li className={pager.currentPage === 1 ? 'disabled' : ''}>
-                    <a onClick={() => this.setPage(pager.currentPage - 1)}>Previous</a>
-                </li>
-                {pager.pages.map((page, index) =>
-                    <li key={index} className={pager.currentPage === page ? 'active' : ''}>
-                        <a onClick={() => this.setPage(page)}>{page}</a>
-                    </li>
-                )}
-                <li className={pager.currentPage === pager.totalPages ? 'disabled' : ''}>
-                    <a onClick={() => this.setPage(pager.currentPage + 1)}>Next</a>
-                </li>
-                <li className={pager.currentPage === pager.totalPages ? 'disabled' : ''}>
-                    <a onClick={() => this.setPage(pager.totalPages)}>Last</a>
-                </li>
-            </ul>
+            // <ul>
+            //     <li className={pager.currentPage === 1 ? 'disabled' : ''}>
+            //         <a onClick={() => this.setPage(1)}>First</a>
+            //     </li>
+            //     <li className={pager.currentPage === 1 ? 'disabled' : ''}>
+            //         <a onClick={() => this.setPage(pager.currentPage - 1)}>Previous</a>
+            //     </li>
+            //     {pager.pages.map((page, index) =>
+            //         <li key={index} className={pager.currentPage === page ? 'active' : ''}>
+            //             <a onClick={() => this.setPage(page)}>{page}</a>
+            //         </li>
+            //     )}
+            //     <li className={pager.currentPage === pager.totalPages ? 'disabled' : ''}>
+            //         <a onClick={() => this.setPage(pager.currentPage + 1)}>Next</a>
+            //     </li>
+            //     <li className={pager.currentPage === pager.totalPages ? 'disabled' : ''}>
+            //         <a onClick={() => this.setPage(pager.totalPages)}>Last</a>
+            //     </li>
+            // </ul>
+            <div>HElllllllllllllllllllllllllooooo</div>
         );
     }
 }

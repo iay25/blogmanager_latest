@@ -6,6 +6,7 @@ import {editPost} from '../../actions/actions'
 import {bindActionCreators} from "redux";
 import { Link } from 'react-router-dom'
 import Modal from 'react-responsive-modal';
+import Pagination from './Paginator'
 var validate = require("validate.js");
 var moment = require('moment');
 
@@ -14,10 +15,9 @@ class PostList extends Component{
         super(props);
         console.log('>>>>>>>in post comp')
         console.log(props)
-        this.state={error:[],hasErrors:false,open: false,currentPost:null}
+        this.state={error:[],hasErrors:false,open: false,currentPost:null, pageOfItems:[],posts:this.props.posts}
       }
       onOpenModal(post,e){
-        console.log(post)
         this.setState({ open: true,currentPost:post});
       };
     
@@ -112,32 +112,47 @@ class PostList extends Component{
     handleDelete(postid,e){
       e.preventDefault();
       swal({
-        title: "Are you sure?",
-        text: "Once deleted, you will not be able to recover this post!",
-        icon: "warning",
-        buttons: true,
-        dangerMode: true,
-      })
-      .then((willDelete) => {
-        if (willDelete) {
-          (this.props.deletePost(postid,(status)=>{
-            if(status===200){
-              swal("Deleted!", "Your post has been deleted!", "success");
-            }
-            else{
-              swal("Oops!", "Something went wrong!,Please check server", "error")
-            }
-          }));
-        } else {
-          swal("Your post is safe with us!");
+        title: 'Are you sure?',
+        text: "You won't be able to revert this!",
+        type: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, delete it!',
+        cancelButtonText: 'No, cancel!',
+        confirmButtonClass: 'btn btn-success',
+        cancelButtonClass: 'btn btn-danger',
+        buttonsStyling: true,
+        reverseButtons: true
+      }).then((result) => {
+        if (result.value) {
+          swal(
+            'Deleted!',
+            'Your post has been deleted.',
+            'success'
+          )
+        } else if (
+          // Read more about handling dismissals
+          result.dismiss === swal.DismissReason.cancel
+        ) {
+          swal(
+            'Cancelled',
+            'Your post is safe with us :)',
+            'error'
+          )
         }
-        
-      }
-    );
+      })
     }
+    onChangePage=(pageOfItems)=>{
+      // update state with new page of items
+      this.setState({ pageOfItems: pageOfItems });
+  }
     render(){
+      console.log(this.props.posts)
       let modalPopUp =(<div></div>);
       if(null != this.state.currentPost){
+        console.log(this.state.currentPost)
+        var date_millis=(Date.parse(this.state.currentPost.pdate))
+        var cor_date=new Date(date_millis).toLocaleDateString();
+        console.log(cor_date)
        modalPopUp = (<Modal open={this.state.open} onClose={this.onCloseModal} closeIconSize={14} little>
         { (this.state.hasErrors) ? <div>
           {(this.state.errors.map((error,index)=>{
@@ -157,7 +172,7 @@ class PostList extends Component{
           </div>
           <div className="form-group required">
             <label className="control-label"  htmlFor="date">Date</label>
-            <input className="form-control" readOnly  defaultValue={this.state.currentPost.pdate}  name="date" id="date"  type="date" />
+            <input className="form-control" readOnly defaultValue={cor_date} name="date" id="date"  type="date" />
           </div>
           <div className="form-group">
             <label htmlFor="content">Update Content</label>
@@ -167,33 +182,34 @@ class PostList extends Component{
         </form>
         </Modal>);
       }
-    return (this.props.posts.length===0)?(<div><h3>Sorry no posts available</h3></div>):this.props.posts.map(post=>{
-      return(
-      <article key={Math.random()} className="blog-post">
-      {/* <div className="blog-post-image">
-        <a href="post.html"><img alt="" src={require('../../utils/images/750x500-1.jpg')} /></a>
-      </div> */}
-      <div className="blog-post-body">
-        <h2><Link to={`/posts/${post.pid}`}>{post.ptitle}</Link>
-          <button type="button" onClick={this.onOpenModal.bind(this,post)} className="btn btn-lg btn-info pull-right">
-            <span className="fa fa-edit"/>
-          </button>
-          {modalPopUp}
-          <button onClick={this.handleDelete.bind(this,post.pid)} type="button"  id="btndel"  className="btn btn-lg btn-danger pull-right">
-            <span className="fa fa-trash"/>
-          </button>
-          </h2>
-        <div className="post-meta"><span>by <a href="#">{post.pauthor}</a></span>/<span><i className="fa fa-clock-o" />{(new Date(post.pdate)).toDateString()}</span>/<span><i className="fa fa-comment-o" /> <a href="#">343</a></span></div>
-        <div>{(post.pcontent.slice(0,post.pcontent.length/2))}<span>...</span></div>
-        <div className="read-more"><Link to={`/posts/${post.pid}`}>Continue Reading</Link></div>
-      </div>
-     </article>
 
-    )
-    })
-    }
-    
-    }
+return<div>
+{ this.state.pageOfItems.map((post)=>{
+   return <article key={Math.random()*post.pid} className="blog-post">
+   {/* <div className="blog-post-image">
+     <a href="post.html"><img alt="" src={require('../../utils/images/750x500-1.jpg')} /></a>
+   </div> */}
+   <div className="blog-post-body">
+     <h2><Link to={`/posts/${post.pid}`}>{post.ptitle}</Link>
+       <button type="button" onClick={this.onOpenModal.bind(this,post)} className="btn btn-lg btn-info pull-right">
+         <span className="fa fa-edit"/>
+       </button>
+       {modalPopUp}
+       <button onClick={this.handleDelete.bind(this,post.pid)} type="button"  id="btndel"  className="btn btn-lg btn-danger pull-right">
+         <span className="fa fa-trash"/>
+       </button>
+       </h2>
+     <div className="post-meta"><span>by <a href="#">{post.pauthor}</a></span>/<span><i className="fa fa-clock-o" />{new Date(post.pdate).toDateString()}</span>/<span><i className="fa fa-comment-o" /> <a href="#">343</a></span></div>
+     <div>{(post.pcontent.slice(0,post.pcontent.length/2))}<span>...</span></div>
+     <div className="read-more"><Link to={`/posts/${post.pid}`}>Continue Reading</Link></div>
+   </div>
+  </article>
+ })
+}
+ <Pagination items={this.props.posts} onChangePage={this.onChangePage}></Pagination>
+ </div>
+  }
+}
 const mapStateToProps = state => {
     
     return {
