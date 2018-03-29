@@ -5,12 +5,8 @@ import PostList from "../containers/PostListComponent"
 import { connect } from "react-redux"
 import { bindActionCreators } from "redux";
 import { savePost } from '../../actions/actions'
-import swal from 'sweetalert2'
 import Modal from 'react-responsive-modal';
-import axios from 'axios'
 import CreateNew from './CreateNewForm'
-var validate = require("validate.js");
-var moment = require('moment');
 class Layout extends Component {
   constructor(props) {
     super(props);
@@ -148,11 +144,9 @@ class Layout extends Component {
               <div className="row">
                 <div className="col-md-12">
                   <button  type="button" onClick={this.onOpenModal} className="btn btn-lg btn-primary">Create New</button> 
+                  <br/> <br/> <br/>
                   <Modal open={this.state.open} onClose={this.onCloseModal} closeIconSize={14} little>
-
-
-
-      <CreateNew/>
+                  <CreateNew/>
 
 
 

@@ -5,8 +5,8 @@ import {deletePost} from '../../actions/actions'
 import {editPost} from '../../actions/actions'
 import {bindActionCreators} from "redux";
 import { Link } from 'react-router-dom'
-import Modal from 'react-responsive-modal';
-import Pagination from './Paginator'
+import Img from 'react-image'
+import Loader from 'react-loader-spinner'
 var validate = require("validate.js");
 var moment = require('moment');
 
@@ -15,14 +15,14 @@ class PostList extends Component{
         super(props);
         console.log('>>>>>>>in post comp')
         console.log(props)
-        this.state={error:[],hasErrors:false,open: false,currentPost:null, pageOfItems:[],posts:this.props.posts}
+        this.state={open: false}
       }
       onOpenModal(post,e){
-        this.setState({ open: true,currentPost:post});
+        this.setState({ open: true});
       };
     
       onCloseModal = () => {
-        this.setState({ open: false,errors:[],hasErrors:false });
+        this.setState({ open: false });
       };
     handleEdit(postid,e){
       console.log(postid)
@@ -124,11 +124,23 @@ class PostList extends Component{
         reverseButtons: true
       }).then((result) => {
         if (result.value) {
-          swal(
-            'Deleted!',
-            'Your post has been deleted.',
-            'success'
-          )
+          this.props.deletePost(postid,(status)=>{
+            if(status===200){
+              swal(
+                'Deleted!',
+                'Your post has been deleted.',
+                'success'
+              )
+            }
+            else{
+              swal(
+                'Sorry',
+                'Unable to contact server,Please try later',
+                'error'
+              )
+            }
+          });
+        
         } else if (
           // Read more about handling dismissals
           result.dismiss === swal.DismissReason.cancel
@@ -146,55 +158,32 @@ class PostList extends Component{
       this.setState({ pageOfItems: pageOfItems });
   }
     render(){
-      console.log(this.props.posts)
-      let modalPopUp =(<div></div>);
-      if(null != this.state.currentPost){
-        console.log(this.state.currentPost)
-        var date_millis=(Date.parse(this.state.currentPost.pdate))
-        var cor_date=new Date(date_millis).toLocaleDateString();
-        console.log(cor_date)
-       modalPopUp = (<Modal open={this.state.open} onClose={this.onCloseModal} closeIconSize={14} little>
-        { (this.state.hasErrors) ? <div>
-          {(this.state.errors.map((error,index)=>{
-          return <p className="text-danger text-center" key={index*Math.random()}>{error}</p>
-        }
-   )
-   )
-   }</div>:''}
-        <form onSubmit={this.handleEdit.bind(this,this.state.currentPost.pid)}>
-          <div className="form-group required">
-            <label className="control-label"  htmlFor="author">Update Author</label>
-            <input className="form-control" defaultValue={this.state.currentPost.pauthor} name="author" id="author"  type="text" />
-          </div>
-          <div className="form-group required">
-            <label className="control-label"   htmlFor="title">Change Title</label>
-            <input className="form-control" defaultValue={this.state.currentPost.ptitle} name="title" id="title"  type="text" />
-          </div>
-          <div className="form-group required">
-            <label className="control-label"  htmlFor="date">Date</label>
-            <input className="form-control" readOnly defaultValue={cor_date} name="date" id="date"  type="date" />
-          </div>
-          <div className="form-group">
-            <label htmlFor="content">Update Content</label>
-            <textarea name="content" className="form-control" defaultValue={this.state.currentPost.pcontent}  rows="3"></textarea>
-          </div>
-          <button type="submit" className="btn btn-primary">Update</button>
-        </form>
-        </Modal>);
-      }
-
 return<div>
-{ this.state.pageOfItems.map((post)=>{
+{ this.props.posts.map((post)=>{
+  {
+    console.log(post.pimgurls)
+  var array=post.pimgurls.split(',')
+  console.log(array)
+  
+  }
    return <article key={Math.random()*post.pid} className="blog-post">
-   {/* <div className="blog-post-image">
-     <a href="post.html"><img alt="" src={require('../../utils/images/750x500-1.jpg')} /></a>
-   </div> */}
+   <div className="blog-post-image">
+   <Img
+    src={array[0]}
+    loader={<Loader 
+      type="Puff"
+      color="#00BFFF"
+      height="100"	
+      width="100"
+   />   }
+  />
+   </div>
    <div className="blog-post-body">
      <h2><Link to={`/posts/${post.pid}`}>{post.ptitle}</Link>
        <button type="button" onClick={this.onOpenModal.bind(this,post)} className="btn btn-lg btn-info pull-right">
          <span className="fa fa-edit"/>
        </button>
-       {modalPopUp}
+
        <button onClick={this.handleDelete.bind(this,post.pid)} type="button"  id="btndel"  className="btn btn-lg btn-danger pull-right">
          <span className="fa fa-trash"/>
        </button>
@@ -206,7 +195,7 @@ return<div>
   </article>
  })
 }
- <Pagination items={this.props.posts} onChangePage={this.onChangePage}></Pagination>
+ {/* <Pagination items={this.props.posts} onChangePage={this.onChangePage}></Pagination> */}
  </div>
   }
 }

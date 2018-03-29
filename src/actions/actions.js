@@ -7,7 +7,7 @@ export const savePost=(info,callback)=>{
         data: info,
         headers: {'content-type': 'application/json'}
       });
-    
+      console.log('request gyi bhyi save ki')
     return (dispatch)=>{
         request.then((response)=>{
             console.log('post saved successfully')
